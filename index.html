@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sara Santoleri</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --white: #f5f4f0;
+    --gray: #aaaaaa;
+    --mid: #2a2a2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  #cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--white);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s;
+    mix-blend-mode: difference;
+  }
+
+  #cursor-aura {
+    position: fixed;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(245,244,240,0.3);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s, height 0.25s, border-color 0.25s;
+  }
+
+  #glitter-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 28px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: difference;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  #hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(72px, 12vw, 160px);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: -4px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gray);
+  }
+
+  .hero-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+
+  .hero-desc {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--gray);
+    max-width: 320px;
+  }
+
+  .hero-scroll {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gray);
+    animation: scrollLine 2s 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scrollLine {
+    0%,100% { width: 40px; opacity: 0.4; }
+    50% { width: 70px; opacity: 1; }
+  }
+
+  .hero-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    right: 200px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.08) 60%, transparent);
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--mid);
+    border-bottom: 1px solid var(--mid);
+    padding: 20px 0;
+    white-space: nowrap;
+  }
+
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 20s linear infinite;
+  }
+
+  .marquee-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gray);
+    padding: 0 40px;
+  }
+
+  .marquee-dot { color: var(--white); font-style: normal; }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* SECTION */
+  section { padding: 120px 60px; position: relative; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 64px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gray);
+  }
+
+  /* PROGETTI */
+  #progetti { border-top: 1px solid var(--mid); }
+
+  /* SINGLE PROJECT BLOCK */
+  .project-block {
+    margin-bottom: 120px;
+  }
+
+  .project-block:last-child { margin-bottom: 0; }
+
+  .project-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    gap: 40px;
+  }
+
+  .project-num {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  .project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300;
+    line-height: 1.0;
+    margin-bottom: 12px;
+  }
+
+  .project-subtitle {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 20px;
+  }
+
+  .project-desc-full {
+    font-size: 12px;
+    line-height: 2;
+    color: var(--gray);
+    max-width: 520px;
+  }
+
+  .project-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .tag {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .project-support {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-top: 16px;
+  }
+
+  /* IMAGE GALLERY */
+  .gallery {
+    display: grid;
+    gap: 3px;
+  }
+
+  .gallery-2 { grid-template-columns: 1fr 1fr; }
+  .gallery-3 { grid-template-columns: 1.4fr 1fr; }
+  .gallery-solo { grid-template-columns: 1fr; }
+
+  .gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(15%);
+    transition: filter 0.4s;
+    background: var(--black);
+  }
+
+  .gallery img:hover { filter: grayscale(0%); }
+
+  .gallery-tall { aspect-ratio: 3/2; overflow: hidden; background: var(--black); }
+  .gallery-short { aspect-ratio: 4/3; overflow: hidden; background: var(--black); }
+  .gallery-wide { aspect-ratio: 16/7; overflow: hidden; background: var(--black); }
+  .gallery-port { aspect-ratio: 2/3; overflow: hidden; }
+
+  /* SUB GRID for 3 images */
+  .gallery-sub {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    background: var(--black);
+  }
+
+  .gallery-sub .gallery-short { aspect-ratio: unset; height: 100%; }
+
+  /* SOUNDCLOUD PLAYER */
+  .sound-block {
+    margin-top: 32px;
+    border: 1px solid var(--mid);
+    overflow: hidden;
+  }
+
+  .sound-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sound-label::before {
+    content: '▶';
+    font-size: 8px;
+  }
+
+  .sound-block iframe {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  /* DIVIDER */
+  .block-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--mid);
+    margin: 80px 0;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--mid);
+    padding: 48px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gray);
+  }
+
+  .footer-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    nav { padding: 24px; }
+    nav .nav-links { display: none; }
+    #hero { padding: 0 24px 60px; }
+    section { padding: 80px 24px; }
+    .gallery-2, .gallery-3 { grid-template-columns: 1fr; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
+    .project-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="glitter-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-aura"></div>
+
+<nav>
+  <a href="#" class="nav-logo">Sara Santoleri</a>
+  <ul class="nav-links">
+    <li><a href="#progetti">Projects</a></li>
+    <li><a href="#contatti">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-line"></div>
+  <p class="hero-eyebrow">Interactive Installations · Performance</p>
+  <h1 class="hero-title">
+    Sara<br>
+    <em>Santoleri</em>
+  </h1>
+  <div class="hero-sub">
+    <p class="hero-desc">Through a multidisciplinary approach weaving together performance, installations, video and participatory practices, her work investigates popular culture as a living archive of collective memories and transfeminist resistances, opening new possibilities for narrative and critical rewriting. This research journey converges today in the project Voci Arkaike, which gathers and continues its fundamental tensions.</p>
+    <span class="hero-scroll">Scroll</span>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Interactive Installations</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Performance</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Research</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Interactive Installations</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Performance</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Research</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Interactive Installations</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Performance</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Research</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Interactive Installations</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Performance</span><span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Research</span><span class="marquee-item marquee-dot">✦</span>
+  </div>
+</div>
+
+<section id="progetti">
+  <p class="section-label reveal">Voci Arkaike — Selected Works</p>
+
+  <!-- PROJECT 01 – L'Antidoto -->
+  <div class="project-block reveal">
+    <div class="project-header">
+      <div>
+        <p class="project-num">01</p>
+        <h2 class="project-title">L'Antidoto</h2>
+        <p class="project-subtitle">Video Performance · 05 – 20 May 2025</p>
+        <p class="project-desc-full">A sound installation evoking an archival folk ballad through electronic treatment and four voices. The performers' bodies — motionless and in unnatural postures — become living amplifiers of a female memory transmitted orally.</p>
+        <div class="project-tags">
+          <span class="tag">Video performance</span>
+          <span class="tag">Sound installation</span>
+          <span class="tag">20 May 2025</span>
+        </div>
+      </div>
+    </div>
+
+            <div class="gallery" style="display:grid; grid-template-columns:1fr 1fr; gap:3px; background:#080808;">
+      <div style="grid-column:1/-1; overflow:hidden; aspect-ratio:16/7; background:#080808;">
+        <img src="images/img_01.jpg" alt="L'Antidoto" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div style="overflow:hidden; aspect-ratio:4/3; background:#080808;">
+        <img src="images/img_02.jpg" alt="L'Antidoto" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div style="overflow:hidden; aspect-ratio:4/3; background:#080808;">
+        <img src="images/img_03.jpg" alt="L'Antidoto" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+    </div>
+    <div class="sound-block" style="margin-top:32px;">
+      <div class="sound-label">Watch — L'Antidoto</div>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;">
+        <iframe src="https://www.youtube.com/embed/0d94Qgjfcoo" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="block-divider"></div>
+
+  <!-- PROJECT 02 – Corve -->
+  <div class="project-block reveal">
+    <div class="project-header">
+      <div>
+        <p class="project-num">02</p>
+        <h2 class="project-title">Corve</h2>
+        <p class="project-subtitle">Live Performance · 5 October 2025</p>
+        <p class="project-desc-full">The performance interweaves a medieval episode from Viterbo — the invasion of crows driven back into the sulphurous waters of the Bullicame — with the persecutory logic of the Malleus Maleficarum. Amulets, herbs and song build a space of reclamation of criminalised female knowledge.</p>
+        <div class="project-tags">
+          <span class="tag">Live performance</span>
+          <span class="tag">5 October 2025</span>
+          <span class="tag">Produzioni dal Basso</span>
+          <span class="tag">Trevinano Re-Wind</span>
+        </div>
+        <p class="project-support">Supported by Produzioni Dal Basso & Trevinano Re-Wind</p>
+      </div>
+    </div>
+
+            <div class="gallery" style="display:grid; grid-template-columns:1fr 1.4fr; gap:3px; background:#080808;">
+      <div style="overflow:hidden; aspect-ratio:2/3; background:#080808;">
+        <img src="images/img_04.jpg" alt="Corve" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div style="overflow:hidden; aspect-ratio:2/3; background:#080808;">
+        <img src="images/img_05.jpg" alt="Corve" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+    </div>
+    <div class="sound-block" style="margin-top:32px;">
+      <div class="sound-label">Watch — Corve</div>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;">
+        <iframe src="https://www.youtube.com/embed/nn1995hZKBk" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="block-divider"></div>
+
+  <!-- PROJECT 03 – Ci eri tre surelle -->
+  <div class="project-block reveal">
+    <div class="project-header">
+      <div>
+        <p class="project-num">03</p>
+        <h2 class="project-title">Ci eri tre surelle</h2>
+        <p class="project-subtitle">Live Performance · 2015</p>
+        <p class="project-desc-full">Drawing on research into the female oral heritage of Abruzzo between the nineteenth century and the 1950s, the performance reactivates the collective ritual of the fountain as a political and relational space. In a hybrid dramaturgy weaving together body, voice and technology, the audience is involved as an active part in the construction of a shared memory.</p>
+        <div class="project-tags">
+          <span class="tag">Live performance</span>
+          <span class="tag">DiD Studio</span>
+          <span class="tag">Teatro Florian</span>
+        </div>
+        <p class="project-support">Supported by DiD Studio & Teatro Florian</p>
+      </div>
+    </div>
+
+            <div class="gallery" style="display:grid; grid-template-columns:1fr 1fr; gap:3px; background:#080808;">
+      <div style="overflow:hidden; aspect-ratio:2/3; background:#080808;">
+        <img src="images/img_06.jpg" alt="Ci eri tre surelle" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div style="display:grid; grid-template-rows:1fr 1fr; gap:3px; background:#080808;">
+        <div style="overflow:hidden; background:#080808;">
+          <img src="images/img_07.jpg" alt="Ci eri tre surelle" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="overflow:hidden; background:#080808;">
+          <img src="images/img_08.jpg" alt="Ci eri tre surelle" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+      </div>
+      <div style="grid-column:1/-1; overflow:hidden; aspect-ratio:3/2; background:#080808;">
+        <img src="images/img_09.jpg" alt="Ci eri tre surelle" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+    </div>
+    <div class="sound-block" style="margin-top:32px;">
+      <div class="sound-label">Listen — Ci eri tre surelle</div>
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/sara-santoleri-510031702/ci-eri-tre-surelle&color=%23f5f4f0&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
+      </iframe>
+    </div>
+    <div class="sound-block" style="margin-top:3px;">
+      <div class="sound-label">Watch — Ci eri tre surelle</div>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;">
+        <iframe src="https://www.youtube.com/embed/yTHwwQ7-4hM" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<footer id="contatti">
+  <p class="footer-copy">© 2025 Sara Santoleri — All rights reserved</p>
+  <a href="mailto:sarasantoleri01@gmail.com" class="footer-name" style="text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.2); transition:border-color 0.2s;">sarasantoleri01@gmail.com</a>
+</footer>
+
+<script>
+const canvas = document.getElementById('glitter-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+let glitters = [];
+let mouse = { x: -999, y: -999 };
+let lastX = -999, lastY = -999;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+const SHAPES = ['✦', '✧', '★', '·', '◆', '+', '✕', '⬡'];
+const WHITES = ['rgba(255,255,255,', 'rgba(240,240,235,', 'rgba(200,200,200,', 'rgba(180,180,170,'];
+
+function spawnGlitter(x, y, count = 3) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 0.4 + Math.random() * 2.2;
+    const size = 6 + Math.random() * 14;
+    glitters.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 0.6,
+      size, rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.15,
+      alpha: 0.9 + Math.random() * 0.1,
+      decay: 0.012 + Math.random() * 0.018,
+      color: WHITES[Math.floor(Math.random() * WHITES.length)],
+      shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      gravity: 0.03 + Math.random() * 0.04,
+      shimmer: Math.random() * Math.PI * 2,
+      shimmerSpeed: 0.08 + Math.random() * 0.12,
+    });
+  }
+}
+
+function drawGlitters() {
+  ctx.clearRect(0, 0, W, H);
+  glitters = glitters.filter(g => g.alpha > 0.01);
+  glitters.forEach(g => {
+    g.x += g.vx; g.y += g.vy; g.vy += g.gravity;
+    g.vx *= 0.995; g.rotation += g.rotSpeed;
+    g.shimmer += g.shimmerSpeed; g.alpha -= g.decay;
+    const shimmerAlpha = g.alpha * (0.7 + 0.3 * Math.sin(g.shimmer));
+    ctx.save();
+    ctx.translate(g.x, g.y); ctx.rotate(g.rotation);
+    ctx.font = g.size + 'px serif';
+    ctx.fillStyle = g.color + shimmerAlpha.toFixed(3) + ')';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(255,255,255,0.4)'; ctx.shadowBlur = 6;
+    ctx.fillText(g.shape, 0, 0);
+    ctx.restore();
+  });
+  requestAnimationFrame(drawGlitters);
+}
+drawGlitters();
+
+document.addEventListener('mousemove', e => {
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  const dx = mouse.x - lastX; const dy = mouse.y - lastY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist > 6) {
+    spawnGlitter(mouse.x, mouse.y, Math.min(Math.floor(dist / 5), 5));
+    lastX = mouse.x; lastY = mouse.y;
+  }
+});
+
+document.addEventListener('click', e => spawnGlitter(e.clientX, e.clientY, 20));
+
+const cursorDot = document.getElementById('cursor');
+const cursorAura = document.getElementById('cursor-aura');
+let auraX = 0, auraY = 0;
+document.addEventListener('mousemove', e => {
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+});
+setInterval(() => {
+  if (mouse.x < 0) return;
+  auraX += (mouse.x - auraX) * 0.1;
+  auraY += (mouse.y - auraY) * 0.1;
+  cursorAura.style.left = auraX + 'px';
+  cursorAura.style.top = auraY + 'px';
+}, 16);
+document.querySelectorAll('a, button, .project-block, img').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorAura.style.width = '64px'; cursorAura.style.height = '64px';
+    cursorAura.style.borderColor = 'rgba(245,244,240,0.7)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorAura.style.width = '40px'; cursorAura.style.height = '40px';
+    cursorAura.style.borderColor = 'rgba(245,244,240,0.3)';
+  });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
